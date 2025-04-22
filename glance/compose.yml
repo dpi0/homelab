@@ -9,12 +9,12 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
       traefik.enable: true
-      traefik.http.routers.glance-http.entrypoints: web
-      traefik.http.routers.glance-http.rule: "Host(`${FQDN}`)"
-      # traefik.http.routers.glance-https.entrypoints: websecure
-      # traefik.http.routers.glance-https.rule: "Host(`${FQDN}`)"
-      # traefik.http.routers.glance-https.tls: true
-      # traefik.http.routers.glance-https.tls.certresolver: cloudflare
+      # traefik.http.routers.glance-http.entrypoints: web
+      # traefik.http.routers.glance-http.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.glance-https.entrypoints: websecure
+      traefik.http.routers.glance-https.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.glance-https.tls: true
+      traefik.http.routers.glance-https.tls.certresolver: cloudflare
       glance.name: Glance
       glance.url: $FQDN
       glance.id: glance
