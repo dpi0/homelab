@@ -1,0 +1,31 @@
+---
+services:
+  glance:
+    container_name: glance
+    image: glanceapp/glance
+    restart: unless-stopped
+    volumes:
+      - $VOLUME/glance/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      traefik.enable: true
+      traefik.http.routers.glance-http.entrypoints: web
+      traefik.http.routers.glance-http.rule: "Host(`${FQDN}`)"
+      # traefik.http.routers.glance-https.entrypoints: websecure
+      # traefik.http.routers.glance-https.rule: "Host(`${FQDN}`)"
+      # traefik.http.routers.glance-https.tls: true
+      # traefik.http.routers.glance-https.tls.certresolver: cloudflare
+      glance.name: Glance
+      glance.url: $FQDN
+      glance.id: glance
+    # ports:
+    #   - 1001:8080
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+    external: true
+  backend:
+    external: true
