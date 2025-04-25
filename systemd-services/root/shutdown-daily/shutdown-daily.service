@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily Shutdown at scheduled time
+Requires=network.target
+After=network.target
+
+[Service]
+Type=oneshot
+# CHANGE this path based on the system: on arch it is, /usr/bin/shutdown
+ExecStart=/usr/sbin/shutdown -P now
