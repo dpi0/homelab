@@ -16,6 +16,7 @@ services:
       traefik.http.routers.glance-https.tls: true
       traefik.http.routers.glance-https.tls.certresolver: cloudflare
       traefik.http.routers.glance-https.middlewares: tinyauth
+      com.centurylinklabs.watchtower.enable: true
       glance.name: Glance
       glance.url: $FQDN
       glance.id: glance
@@ -23,10 +24,7 @@ services:
     #   - 1001:8080
     networks:
       - frontend
-      - backend
 
 networks:
   frontend:
-    external: true
-  backend:
     external: true

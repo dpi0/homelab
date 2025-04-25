@@ -41,12 +41,10 @@ services:
       traefik.http.routers.tinyauth-secure.service: tinyauth
       traefik.http.services.tinyauth.loadbalancer.server.port: 3000
       traefik.http.middlewares.tinyauth.forwardauth.address: http://tinyauth:3000/api/auth/traefik
+      com.centurylinklabs.watchtower.enable: true
     networks:
       - frontend
-      - backend
 
 networks:
   frontend:
-    external: true
-  backend:
     external: true
