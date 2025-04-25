@@ -1,0 +1,32 @@
+---
+services:
+  jellyfin:
+    container_name: jellyfin
+    image: jellyfin/jellyfin
+    # image: lscr.io/linuxserver/jellyfin:latest
+    restart: unless-stopped
+    environment:
+      PUID: $PUID
+      GID: $GID
+      TZ: $TZ
+    volumes:
+      - $VOLUME/jellyfin/config:/config
+      - $MEDIA:$MEDIA
+      - $DOWNLOADS:$DOWNLOADS
+    labels:
+      traefik.enable: true
+      traefik.http.routers.jellyfin-https.entrypoints: websecure
+      traefik.http.routers.jellyfin-https.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.jellyfin-https.tls: true
+      traefik.http.routers.jellyfin-https.tls.certresolver: cloudflare
+      traefik.http.services.jellyfin-https.loadbalancer.server.port: 8096
+      # traefik.http.services.jellyfin-https.loadBalancer.passHostHeader: true
+      com.centurylinklabs.watchtower.enable: true
+    ports:
+      - $INTERNAL_PORT:8096
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    external: true

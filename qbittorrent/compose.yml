@@ -1,0 +1,40 @@
+---
+services:
+  qbittorrent:
+    container_name: qbittorrent
+    image: ghcr.io/hotio/qbittorrent:latest
+    restart: unless-stopped
+    environment:
+      PUID: $PUID
+      GID: $GID
+      TZ: $TZ
+      WEBUI_PORTS: 8080/tcp,8080/udp
+      # for lscr image
+      # WEBUI_PORT: 8080
+      # TORRENTING_PORT: 6881
+      # DOCKER_MODS: ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
+    volumes:
+      # for lscr image
+      # - $VOLUME/qbittorrent/appdata:/config
+      - $VOLUME/qbittorrent:/config
+      - $VOLUME/qbittorrent:/data
+      - $DOWNLOADS:$DOWNLOADS
+      - $HOME:$HOME
+      - $SCRIPTS:/scripts
+    labels:
+      traefik.enable: true
+      traefik.http.routers.qbittorrent-https.entrypoints: websecure
+      traefik.http.routers.qbittorrent-https.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.qbittorrent-https.tls: true
+      traefik.http.routers.qbittorrent-https.tls.certresolver: cloudflare
+      # traefik.http.routers.qbittorrent-https.middlewares: tinyauth
+      traefik.http.services.qbittorrent-https.loadbalancer.server.port: 8080
+      com.centurylinklabs.watchtower.enable: true
+    # ports:
+    #   - 1012:8080
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    external: true

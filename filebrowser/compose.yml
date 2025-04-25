@@ -1,0 +1,32 @@
+---
+services:
+  filebrowser:
+    container_name: filebrowser
+    image: filebrowser/filebrowser
+    restart: unless-stopped
+    environment:
+      PUID: $PUID
+      GID: $GID
+      TZ: $TZ
+    volumes:
+      - $VOLUME/filebrowser/config/settings.json:/config/settings.json
+      - $VOLUME/filebrowser/database/filebrowser.db:/database.db
+      - $HOME:/srv
+      # - $HOME_USER:/srv/$USER
+    labels:
+      traefik.enable: true
+      traefik.http.routers.filebrowser-https.entrypoints: websecure
+      traefik.http.routers.filebrowser-https.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.filebrowser-https.tls: true
+      traefik.http.routers.filebrowser-https.tls.certresolver: cloudflare
+      traefik.http.routers.filebrowser-https.middlewares: tinyauth
+      com.centurylinklabs.watchtower.enable: true
+    # ports:
+    #   - 1011:80 
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    external: true
+

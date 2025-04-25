@@ -1,0 +1,141 @@
+---
+services:
+  radarr:
+    container_name: radarr
+    image: lscr.io/linuxserver/radarr:latest
+    restart: unless-stopped
+    environment:
+      PUID: $PUID
+      PGID: $PGID
+      TZ: $TZ
+    volumes:
+      - $VOLUME/radarr/config:/config
+      - $HDD:$HDD
+    labels:
+      traefik.enable: true
+      traefik.http.routers.radarr-https.entrypoints: websecure
+      traefik.http.routers.radarr-https.rule: Host(`$RADARR_FQDN`)
+      traefik.http.routers.radarr-https.tls: true
+      traefik.http.routers.radarr-https.tls.certresolver: cloudflare
+      # traefik.http.routers.radarr-https.middlewares: tinyauth
+      com.centurylinklabs.watchtower.enable: true
+    networks:
+      - frontend
+
+  sonarr:
+    container_name: sonarr
+    image: lscr.io/linuxserver/sonarr:latest
+    restart: unless-stopped
+    environment:
+      PUID: $PUID
+      PGID: $PGID
+      TZ: $TZ
+    volumes:
+      - $VOLUME/sonarr/config:/config
+      - $HDD:$HDD
+    labels:
+      traefik.enable: true
+      traefik.http.routers.sonarr-https.entrypoints: websecure
+      traefik.http.routers.sonarr-https.rule: Host(`$SONARR_FQDN`)
+      traefik.http.routers.sonarr-https.tls: true
+      traefik.http.routers.sonarr-https.tls.certresolver: cloudflare
+      # traefik.http.routers.sonarr-https.middlewares: tinyauth
+      com.centurylinklabs.watchtower.enable: true
+    networks:
+      - frontend
+
+  bazarr:
+    container_name: bazarr
+    image: lscr.io/linuxserver/bazarr:latest
+    restart: unless-stopped
+    environment:
+      PUID: $PUID
+      PGID: $PGID
+      TZ: $TZ
+    volumes:
+      - $VOLUME/bazarr/config:/config
+      - $HDD:$HDD
+    labels:
+      traefik.enable: true
+      traefik.http.routers.bazarr-https.entrypoints: websecure
+      traefik.http.routers.bazarr-https.rule: Host(`$BAZARR_FQDN`)
+      traefik.http.routers.bazarr-https.tls: true
+      traefik.http.routers.bazarr-https.tls.certresolver: cloudflare
+      # traefik.http.routers.bazarr-https.middlewares: tinyauth
+      com.centurylinklabs.watchtower.enable: true
+    networks:
+      - frontend
+
+  jellyseerr:
+    container_name: jellyseerr
+    image: fallenbagel/jellyseerr:latest
+    restart: unless-stopped
+    environment:
+      TZ: $TZ
+      LOG_LEVEL: debug
+      PORT: 5055
+    volumes:
+      - $VOLUME/jellyseerr/config:/app/config
+    labels:
+      traefik.enable: true
+      traefik.http.routers.jellyseerr-https.entrypoints: websecure
+      traefik.http.routers.jellyseerr-https.rule: Host(`$JELLYSEERR_FQDN`)
+      traefik.http.routers.jellyseerr-https.tls: true
+      traefik.http.routers.jellyseerr-https.tls.certresolver: cloudflare
+      # traefik.http.routers.jellyseerr-https.middlewares: tinyauth
+      com.centurylinklabs.watchtower.enable: true
+    networks:
+      - frontend
+
+  # flaresolverr:
+  #   container_name: flaresolverr
+  #   image: ghcr.io/flaresolverr/flaresolverr:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     LOG_LEVEL: $LOG_LEVEL
+  #     LOG_HTML: $LOG_HTML
+  #     CAPTCHA_SOLVER: $CAPTCHA_SOLVER
+  #     TZ: $TZ
+  #   labels:
+  #     traefik.enable: true
+  #     traefik.http.routers.flaresolverr-https.entrypoints: websecure
+  #     traefik.http.routers.flaresolverr-https.rule: Host(`$FLARESOLVERR_FQDN`)
+  #     traefik.http.routers.flaresolverr-https.tls: true
+  #     traefik.http.routers.flaresolverr-https.tls.certresolver: cloudflare
+  #     # traefik.http.routers.flaresolverr-https.middlewares: tinyauth
+  #     com.centurylinklabs.watchtower.enable: true
+  #   networks:
+  #     - frontend
+
+  # prowlarr:
+  #   container_name: prowlarr
+  #   image: lscr.io/linuxserver/prowlarr:latest
+  #   dns:
+  #     - 8.8.8.8
+  #     - 8.8.4.4
+  #     - 1.1.1.1
+  #   sysctls:
+  #     - net.ipv6.conf.all.disable_ipv6=1
+  #     - net.ipv6.conf.default.disable_ipv6=1
+  #   environment:
+  #     PUID: $PUID
+  #     PGID: $PGID
+  #     TZ: $TZ
+  #     PROWLARR_IGNORE_SSL_ERRORS: true
+  #   volumes:
+  #     - $VOLUME/prowlarr/config:/config
+  #   restart: unless-stopped
+  #   labels:
+  #     traefik.enable: true
+  #     traefik.http.routers.prowlarr-https.entrypoints: websecure
+  #     traefik.http.routers.prowlarr-https.rule: Host(`$PROWLARR_FQDN`)
+  #     traefik.http.routers.prowlarr-https.tls: true
+  #     traefik.http.routers.prowlarr-https.tls.certresolver: cloudflare
+  #     # traefik.http.routers.prowlarr-https.middlewares: tinyauth
+  #     com.centurylinklabs.watchtower.enable: true
+  #   networks:
+  #     - frontend
+
+networks:
+  frontend:
+    external: true

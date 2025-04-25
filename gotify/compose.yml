@@ -1,0 +1,27 @@
+---
+services:
+  gotify:
+    container_name: gotify
+    image: ghcr.io/gotify/server
+    restart: unless-stopped
+    volumes:
+      - $VOLUME/gotify/data-old:/app/data
+    labels:
+      traefik.enable: true
+      traefik.http.routers.gotify-https.entrypoints: websecure
+      traefik.http.routers.gotify-https.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.gotify-https.tls: true
+      traefik.http.routers.gotify-https.tls.certresolver: cloudflare
+      # traefik.http.routers.gotify-https.middlewares: tinyauth
+      com.centurylinklabs.watchtower.enable: true
+    # ports:
+    #   - 1001:80
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+    external: true
+  backend:
+    external: true

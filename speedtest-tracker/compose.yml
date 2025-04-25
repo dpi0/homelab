@@ -1,0 +1,51 @@
+---
+services:
+  speedtest-tracker:
+    container_name: speedtest-tracker
+    image: lscr.io/linuxserver/speedtest-tracker:latest
+    restart: unless-stopped
+    environment:
+      PUID: $PUID
+      PGID: $GID
+      TZ: $TZ
+      APP_KEY: $APP_KEY
+      APP_NAME: "Speedtest Tracker"
+      APP_URL: https://${FQDN}
+      DB_CONNECTION: sqlite
+      # SPEEDTEST_SCHEDULE: $SPEEDTEST_SCHEDULE
+      SPEEDTEST_SERVERS:  $SPEEDTEST_SERVERS
+      # SPEEDTEST_BLOCKED_SERVERS: $SPEEDTEST_BLOCKED_SERVERS
+      # SPEEDTEST_INTERFACE: $SPEEDTEST_INTERFACE 
+      DISPLAY_TIMEZONE: $TZ
+      THRESHOLD_ENABLED: true
+      THRESHOLD_DOWNLOAD: 100 # in Mbps
+      THRESHOLD_UPLOAD: 100 # in Mbps
+      THRESHOLD_PING: 3 # in ms
+      PRUNE_RESULTS_OLDER_THAN: 0
+      # DB_HOST:  #optional
+      # DB_PORT:  #optional
+      # DB_DATABASE:  #optional
+      # DB_USERNAME:  #optional
+      # DB_PASSWORD:  #optional
+      # ADMIN_NAME: $ADMIN_NAME # default, "Admin"
+      # ADMIN_EMAIL: $ADMIN_EMAIL # default, "admin@example.com"
+      # ADMIN_PASSWORD: $ADMIN_PASSWORD #default, "password"
+    volumes:
+      - $VOLUME/speedtest-tracker/config:/config
+    labels:
+      traefik.enable: true
+      traefik.http.routers.speedtest-https.entrypoints: websecure
+      traefik.http.routers.speedtest-https.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.speedtest-https.tls: true
+      traefik.http.routers.speedtest-https.tls.certresolver: cloudflare
+      traefik.http.routers.speedtest-https.middlewares: tinyauth
+      com.centurylinklabs.watchtower.enable: true
+    # ports:
+    #   - 1005:80
+      # - 1005:443
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    external: true

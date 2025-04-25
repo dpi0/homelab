@@ -1,0 +1,27 @@
+---
+services:
+  portainer:
+    container_name: portainer
+    # image: portainer/portainer-ce:sts
+    # image: portainer/portainer-ce:2.21.4
+    image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    volumes:
+      - $VOLUME/portainer/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      traefik.enable: true
+      traefik.http.routers.portainer-https.entrypoints: websecure
+      traefik.http.routers.portainer-https.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.portainer-https.tls: true
+      traefik.http.routers.portainer-https.tls.certresolver: cloudflare
+      traefik.http.services.portainer-https.loadbalancer.server.port: 9000
+      com.centurylinklabs.watchtower.enable: true
+    # ports:
+    #   - 1002:9443
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    external: true

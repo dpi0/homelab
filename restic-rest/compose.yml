@@ -1,0 +1,23 @@
+---
+services:
+  restic-rest:
+    container_name: restic-rest
+    image: restic/rest-server:latest
+    restart: unless-stopped
+    environment:
+      OPTIONS: "--tls"
+      # using append-only doesn't allow for forget and prune! so backrest errors out
+      # use append-only on critical servers that may be compromised at any time (like a garbage VPS)
+      #OPTIONS: '--tls --append-only'
+    volumes:
+      - $VOLUME/restic-rest/data:/data
+    labels:
+      com.centurylinklabs.watchtower.enable: true
+    ports:
+      - $RESTIC_PORT:8000
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true

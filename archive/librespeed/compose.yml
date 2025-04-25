@@ -1,0 +1,36 @@
+---
+services:
+  librespeed:
+    container_name: librespeed
+    image: ghcr.io/librespeed/speedtest:latest
+    restart: unless-stopped
+    mem_limit: 256mb
+    environment:
+      MODE: standalone
+      TITLE: "LibreSpeed"
+      TELEMETRY: false
+      #ENABLE_ID_OBFUSCATION: false
+      #REDACT_IP_ADDRESSES: false
+      #PASSWORD:
+      #EMAIL:
+      DISABLE_IPINFO: true
+      # IPINFO_APIKEY: $IPINFO_API
+      # DISTANCE: "km"
+      # WEBPORT: 80
+    labels:
+      traefik.enable: true
+      traefik.http.routers.librespeed-https.entrypoints: websecure
+      traefik.http.routers.librespeed-https.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.librespeed-https.tls: true
+      traefik.http.routers.librespeed-https.tls.certresolver: cloudflare
+      # traefik.http.routers.librespeed-https.middlewares: tinyauth
+      traefik.http.services.librespeed-https.loadbalancer.server.port: 8080
+      com.centurylinklabs.watchtower.enable: true
+    ports:
+      - 1004:8080
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    external: true

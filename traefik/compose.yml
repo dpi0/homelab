@@ -12,6 +12,8 @@ services:
       # - ./config/conf/:/etc/traefik/conf/
       - $VOLUME/traefik/data/certs:/etc/traefik/certs:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      com.centurylinklabs.watchtower.enable: true
     ports:
       - 80:80
       - 443:443

@@ -1,0 +1,42 @@
+---
+services:
+  beszel-server:
+    container_name: beszel-server
+    image: henrygd/beszel
+    restart: unless-stopped
+    volumes:
+      - $VOLUME/beszel/data:/beszel_data
+    labels:
+      traefik.enable: true
+      traefik.http.routers.beszel-server-https.entrypoints: websecure
+      traefik.http.routers.beszel-server-https.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.beszel-server-https.tls: true
+      traefik.http.routers.beszel-server-https.tls.certresolver: cloudflare
+      # traefik.http.routers.beszel-server-https.middlewares: tinyauth
+      com.centurylinklabs.watchtower.enable: true
+    # ports:
+    #   - 1006:8090
+    networks:
+      - frontend
+      - backend
+
+  beszel-agent:
+    container_name: beszel-agent
+    image: henrygd/beszel-agent
+    restart: unless-stopped
+    environment:
+      PORT: $AGENT_PORT
+      KEY: $AGENT_SSH_KEY
+    volumes:
+      - $ROOT:/extra-filesystems/root:ro
+      - $HOME:/extra-filesystems/home:ro
+      - $HDD:/extra-filesystems/hdd:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - backend
+
+networks:
+  frontend:
+    external: true
+  backend:
+    external: true
