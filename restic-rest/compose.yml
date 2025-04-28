@@ -5,12 +5,14 @@ services:
     image: restic/rest-server:latest
     restart: unless-stopped
     environment:
-      OPTIONS: "--tls"
+      OPTIONS: "--tls --tls-cert /config/public_key --tls-key /config/private_key"
       # using append-only doesn't allow for forget and prune! so backrest errors out
       # use append-only on critical servers that may be compromised at any time (like a garbage VPS)
       #OPTIONS: '--tls --append-only'
+      PASSWORD_FILE: "/config/.htpasswd"
     volumes:
-      - $VOLUME/restic-rest/data:/data
+      - $VOLUME/restic-rest/config:/config
+      - $BACKUP:/data
     labels:
       com.centurylinklabs.watchtower.enable: true
     ports:
