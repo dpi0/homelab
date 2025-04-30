@@ -1,0 +1,45 @@
+---
+services:
+  paperless-ngx-redis:
+    container_name: paperless-ngx-redis
+    image: docker.io/library/redis:7
+    restart: unless-stopped
+    volumes:
+      - $VOLUME/paperless-ngx/redis/data:/data
+    networks:
+      - backend
+
+  paperless-ngx-server:
+    container_name: paperless-ngx-server
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    environment:
+      PAPERLESS_REDIS: redis://paperless-ngx-redis:6379
+    env_file: .env
+    volumes:
+      - $VOLUME/paperless-ngx/data:/usr/src/paperless/data
+      - $VOLUME/paperless-ngx/export:/usr/src/paperless/export
+      - $VOLUME/paperless-ngx/consume:/usr/src/paperless/consume
+      - $DOCUMENTS:/usr/src/paperless/media
+    labels:
+      traefik.enable: true
+      traefik.http.routers.paperless-ngx-https.entrypoints: websecure
+      traefik.http.routers.paperless-ngx-https.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.paperless-ngx-https.tls: true
+      traefik.http.routers.paperless-ngx-https.tls.certresolver: cloudflare
+      traefik.http.routers.paperless-ngx-https.middlewares: tinyauth
+      traefik.http.services.paperless-ngx-https.loadbalancer.server.port: 8000
+      com.centurylinklabs.watchtower.enable: true
+    depends_on:
+      - paperless-ngx-redis
+    # ports:
+    #   - 1013:8000
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+    external: true
+  backend:
+    external: true
