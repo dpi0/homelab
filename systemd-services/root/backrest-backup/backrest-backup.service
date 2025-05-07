@@ -1,0 +1,9 @@
+[Unit]
+Description=Backup Backrest Data
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/dpi0/scripts/backrest-backup.sh
+User=root
+Group=root
