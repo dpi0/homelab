@@ -1,0 +1,29 @@
+---
+services:
+  stirling-pdf:
+    container_name: stirling-pdf
+    image: docker.stirlingpdf.com/stirlingtools/stirling-pdf:latest
+    environment:
+      DOCKER_ENABLE_SECURITY: false
+      LANGS: en_GB
+    volumes:
+      - $VOLUME/stirling-pdf/trainingData:/usr/share/tessdata
+      - $VOLUME/stirling-pdf/extraConfigs:/configs
+      - $VOLUME/stirling-pdf/customFiles:/customFiles/
+      - $VOLUME/stirling-pdf/logs:/logs/
+      - $VOLUME/stirling-pdf/pipeline:/pipeline/
+    labels:
+      traefik.enable: true
+      traefik.http.routers.stirling-pdf.entrypoints: websecure
+      traefik.http.routers.stirling-pdf.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.stirling-pdf.tls: true
+      traefik.http.routers.stirling-pdf.tls.certresolver: cloudflare
+      # traefik.http.routers.stirling-pdf.middlewares: tinyauth
+      traefik.http.services.stirling-pdf.loadbalancer.server.port: 8080
+      com.centurylinklabs.watchtower.enable: true
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    external: true

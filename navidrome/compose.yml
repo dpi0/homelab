@@ -1,0 +1,39 @@
+---
+services:
+  navidrome:
+    container_name: navidrome
+    image: deluan/navidrome:latest
+    environment:
+      # ND_SCANSCHEDULE: 1h
+      ND_LOGLEVEL: error
+      ND_SESSIONTIMEOUT: 72h
+      # ND_BASEURL: "${FQDN}"
+      # ND_DATAFOLDER: "./data"
+      # ND_MUSICFOLDER: "./music"
+      # ND_CONFIGFILE: "./navidrome.toml"
+      ND_PORT: 4533
+      ND_ENABLEINSIGHTSCOLLECTOR: false
+      # ND_PROMETHEUS_ENABLED: true
+      # ND_PROMETHEUS_METRICSPATH: $METRICS_KEY
+    volumes:
+      - $VOLUME/navidrome/data:/data
+      - $MUSIC:/music:ro
+    labels:
+      traefik.enable: true
+      traefik.http.routers.navidrome-https.entrypoints: websecure
+      traefik.http.routers.navidrome-https.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.navidrome-https.tls: true
+      traefik.http.routers.navidrome-https.tls.certresolver: cloudflare
+      # traefik.http.routers.navidrome-https.middlewares: tinyauth
+      # traefik.http.services.navidrome-https.loadbalancer.server.port: 4533
+      com.centurylinklabs.watchtower.enable: true
+    # ports:
+    #   - 1015:4533
+    expose:
+      - 4533
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    external: true

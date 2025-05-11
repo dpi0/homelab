@@ -1,0 +1,41 @@
+---
+services:
+  code-server:
+    container_name: code-server
+    image: lscr.io/linuxserver/code-server:latest
+    restart: unless-stopped
+    environment:
+      PUID: $PUID
+      GID: $GID
+      TZ: $TZ
+      # if PASSWORD or HASHED_PASSWORD is not provided, there will be no auth.
+      # PASSWORD: password #optional
+      # HASHED_PASSWORD:  #optional
+      # user will have sudo access in the code-server terminal with the specified password
+      # SUDO_PASSWORD: password #optional
+      # SUDO_PASSWORD_HASH:  #optional
+      # domain will be proxied for subdomain proxying
+      # PROXY_DOMAIN: code-server.my.domain #optional
+      # code-server will open this directory by default
+      DEFAULT_WORKSPACE: $HOMELAB
+    volumes:
+      - $VOLUME/code-server/config:/config
+      - $CODE:$CODE
+      - $HOMELAB:$HOMELAB
+    labels:
+      traefik.enable: true
+      traefik.http.routers.code-server-https.entrypoints: websecure
+      traefik.http.routers.code-server-https.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.code-server-https.tls: true
+      traefik.http.routers.code-server-https.tls.certresolver: cloudflare
+      traefik.http.routers.code-server-https.middlewares: tinyauth
+      # traefik.http.services.code-server-https.loadbalancer.server.port: 8443
+      com.centurylinklabs.watchtower.enable: true
+    # ports:
+    #   - 1014:8443
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    external: true
