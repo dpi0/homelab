@@ -24,7 +24,7 @@ services:
       # traefik.http.routers.glance-tailscale.middlewares: tinyauth
 
       com.centurylinklabs.watchtower.enable: true
-
+      
       glance.name: Glance
       glance.url: $FQDN
       glance.id: glance

@@ -9,12 +9,15 @@ services:
     volumes:
       - $VOLUME/portainer/data:/data
       - /var/run/docker.sock:/var/run/docker.sock
+    # command: -H unix:///var/run/docker.sock --base-url="/admin/portainer"
     labels:
       traefik.enable: true
       traefik.http.routers.portainer-https.entrypoints: websecure
       traefik.http.routers.portainer-https.rule: "Host(`${FQDN}`)"
       traefik.http.routers.portainer-https.tls: true
       traefik.http.routers.portainer-https.tls.certresolver: cloudflare
+      # traefik.http.routers.portainer-https.middlewares: portainer-https-stripprefix@docker
+      # traefik.http.middlewares.portainer-https-stripprefix.stripprefix.prefixes: /portainer
       traefik.http.services.portainer-https.loadbalancer.server.port: 9000
       com.centurylinklabs.watchtower.enable: true
     # ports:

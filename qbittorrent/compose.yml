@@ -27,7 +27,7 @@ services:
       traefik.http.routers.qbittorrent-https.rule: "Host(`${FQDN}`)"
       traefik.http.routers.qbittorrent-https.tls: true
       traefik.http.routers.qbittorrent-https.tls.certresolver: cloudflare
-      # traefik.http.routers.qbittorrent-https.middlewares: tinyauth
+      traefik.http.routers.qbittorrent-https.middlewares: tinyauth
       traefik.http.services.qbittorrent-https.loadbalancer.server.port: 8080
       com.centurylinklabs.watchtower.enable: true
     # ports:

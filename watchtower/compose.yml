@@ -26,8 +26,8 @@ services:
       # default 24h, set to 48h
       # WATCHTOWER_POLL_INTERVAL: 172800
       # SECOND MINUTE HOUR DAY MONTH WEEKDAY, extended with a seconds field at the start.
-      # every second calendar day of the month at 23:00
-      WATCHTOWER_SCHEDULE: 0 0 23 */2 * *
+      # every second calendar day of the month at 22:00
+      WATCHTOWER_SCHEDULE: 0 0 22 */2 * *
       # Removes old images after updating
       WATCHTOWER_CLEANUP: true
       # Do not send a message after watchtower started

@@ -5,7 +5,7 @@ global:
 accessLog: {}
 
 log:
-  level: DEBUG
+  level: ERROR
 
 api:
   dashboard: true

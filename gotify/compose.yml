@@ -5,7 +5,8 @@ services:
     image: ghcr.io/gotify/server
     restart: unless-stopped
     volumes:
-      - $VOLUME/gotify/data-old:/app/data
+      - $VOLUME/gotify/data:/app/data
+      - $VOLUME/gotify/plugins:/app/plugins
     labels:
       traefik.enable: true
       traefik.http.routers.gotify-https.entrypoints: websecure
