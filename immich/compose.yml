@@ -24,6 +24,14 @@ services:
       traefik.http.routers.immich-server-https.tls.certresolver: cloudflare
       # traefik.http.routers.immich-server-https.middlewares: tinyauth
       traefik.http.services.immich-server.loadbalancer.server.port: 2283
+
+      traefik.http.routers.immich-server-tailscale-https.rule: "Host(`${FQDN_TAILSCALE}`)"
+      traefik.http.routers.immich-server-tailscale-https.entryPoints: websecure
+      traefik.http.routers.immich-server-tailscale-https.tls: true
+      traefik.http.routers.immich-server-tailscale-https.tls.certresolver: cloudflare
+      traefik.http.services.immich-server-tailscale-https.loadbalancer.server.port: 2283
+      # traefik.http.routers.glance-tailscale.middlewares: tinyauth
+
       com.centurylinklabs.watchtower.enable: true
     # extends:
     #   file: hwaccel.transcoding.yml

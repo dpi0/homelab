@@ -21,6 +21,13 @@ services:
       traefik.http.routers.jellyfin-https.tls.certresolver: cloudflare
       traefik.http.services.jellyfin-https.loadbalancer.server.port: 8096
       # traefik.http.services.jellyfin-https.loadBalancer.passHostHeader: true
+
+      traefik.http.routers.jellyfin-tailscale.rule: "Host(`${FQDN_TAILSCALE}`)"
+      traefik.http.routers.jellyfin-tailscale.entryPoints: websecure
+      traefik.http.routers.jellyfin-tailscale.tls: true
+      traefik.http.routers.jellyfin-tailscale.tls.certresolver: cloudflare
+      # traefik.http.routers.glance-tailscale.middlewares: tinyauth
+
       com.centurylinklabs.watchtower.enable: true
     ports:
       - $INTERNAL_PORT:8096
