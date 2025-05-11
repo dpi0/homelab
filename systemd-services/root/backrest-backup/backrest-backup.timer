@@ -1,8 +1,8 @@
 [Unit]
-Description=Run backrest data backup daily at 23:00
+Description=Run backrest data backup daily at 00:10
 
 [Timer]
-OnCalendar=*-*-* 23:00:00
+OnCalendar=*-*-* 00:00:10
 Persistent=true
 
 [Install]
