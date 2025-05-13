@@ -1,0 +1,33 @@
+---
+services:
+  smokeping:
+    container_name: smokeping
+    image: lscr.io/linuxserver/smokeping:latest
+    restart: unless-stopped
+    hostname: smokeping #optional
+    environment:
+      PUID: $PUID
+      PGID: $GID
+      TZ: $TZ
+      # MASTER_URL: $URL #optional
+      # SHARED_SECRET: password #optional
+      # CACHE_DIR: /tmp #optional
+    volumes:
+      - $VOLUME/smokeping/config:/config
+      - $VOLUME/smokeping/data:/data
+    labels:
+      traefik.enable: true
+      traefik.http.routers.smokeping-https.entrypoints: websecure
+      traefik.http.routers.smokeping-https.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.smokeping-https.tls: true
+      traefik.http.routers.smokeping-https.tls.certresolver: cloudflare
+      traefik.http.routers.smokeping-https.middlewares: tinyauth
+      traefik.http.services.smokeping-https.loadbalancer.server.port: 80
+    # ports:
+    #   - 1007:80
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    external: true

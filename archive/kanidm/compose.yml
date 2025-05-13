@@ -1,0 +1,46 @@
+---
+services:
+  kanidm:
+    container_name: kanidm
+    image: kanidm/server:latest
+    restart: unless-stopped
+    environment:
+      # https://kanidm.github.io/kanidm/master/server_configuration.html
+      KANIDM_VERSION: '2'
+      KANIDM_BINDADDRESS: '127.0.0.1:8443'
+      # KANIDM_BINDADDRESS: '[::]:8443'
+      KANIDM_DB_PATH: '/data/kanidm.db'
+      KANIDM_TLS_CHAIN: "/data/chain.pem"
+      KANIDM_TLS_KEY: "/data/key.pem"
+      # generate using:
+      # sudo certbot certonly --manual --preferred-challenges dns -d $FQDN 
+      KANIDM_DOMAIN: "${FQDN}"
+      KANIDM_ORIGIN: "https://${FQDN}"
+    volumes:
+      # - kanidm_data:/data
+      # - $VOLUME/kanidm/data/server.toml:/data/server.toml
+      - $VOLUME/kanidm/data:/data
+    labels:
+      traefik.enable: true
+      traefik.http.routers.kanidm.entrypoints: websecure
+      traefik.http.routers.kanidm.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.kanidm.tls: true
+      traefik.http.routers.kanidm.tls.certresolver: cloudflare
+      traefik.http.routers.kanidm.middlewares: tinyauth
+      traefik.http.routers.kanidm.service: kanidm
+      traefik.http.services.kanidm.loadbalancer.server.port: 8443
+      com.centurylinklabs.watchtower.enable: true
+    ports:
+      - 8443:8443
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+    external: true
+  backend:
+    external: true
+
+# volumes:
+#   kanidm_data: {}

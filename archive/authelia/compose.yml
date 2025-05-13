@@ -1,0 +1,32 @@
+---
+services:
+  authelia:
+    container_name: authelia
+    image: authelia/authelia:latest
+    restart: unless-stopped
+    environment:
+      TZ: $TZ
+      X_AUTHELIA_CONFIG_FILTERS: template
+    volumes:
+      - $VOLUME/authelia/secrets:/secrets:ro
+      - $VOLUME/authelia/config:/config
+      - $VOLUME/authelia/logs:/var/log/authelia
+    labels:
+      traefik.enable: true
+      traefik.http.routers.authelia.entrypoints: websecure
+      traefik.http.routers.authelia.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.authelia.tls: true
+      traefik.http.routers.authelia.tls.certresolver: cloudflare
+      traefik.http.services.authelia.loadbalancer.server.port: 9091
+      traefik.http.middlewares.authelia.forwardAuth.address: 'http://authelia:9091/api/authz/forward-auth'
+      traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader: true
+      traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders: 'Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+    external: true
+  backend:
+    external: true

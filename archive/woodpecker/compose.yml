@@ -1,0 +1,54 @@
+---
+services:
+  woodpecker-server:
+    container_name: woodpecker-server
+    image: woodpeckerci/woodpecker-server:v3
+    restart: unless-stopped
+    environment:
+      WOODPECKER_OPEN: true
+      WOODPECKER_HOST: "https://${FQDN}"
+      WOODPECKER_AGENT_SECRET: $WOODPECKER_AGENT_SECRET
+      WOODPECKER_GITEA: true
+      WOODPECKER_GITEA_URL: "https://${FORGEJO_FQDN}"
+      WOODPECKER_GITEA_CLIENT: $FORGEJO_CLIENT
+      WOODPECKER_GITEA_SECRET: $FORGEJO_SECRET
+    volumes:
+      # - $VOLUME/woodpecker/data:/var/lib/woodpecker/
+      - woodpecker-server-data:/var/lib/woodpecker/
+    labels:
+      traefik.enable: true
+      traefik.http.routers.woodpecker-server.entrypoints: websecure
+      traefik.http.routers.woodpecker-server.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.woodpecker-server.tls: true
+      traefik.http.routers.woodpecker-server.tls.certresolver: cloudflare
+      # traefik.http.routers.woodpecker-server.middlewares: tinyauth
+      traefik.http.services.woodpecker-server.loadbalancer.server.port: 8000
+      com.centurylinklabs.watchtower.enable: true
+    networks:
+      - frontend
+
+  woodpecker-agent:
+    container_name: woodpecker-agent
+    image: woodpeckerci/woodpecker-agent:v3
+    restart: unless-stopped
+    environment:
+      WOODPECKER_SERVER: woodpecker-server:9000
+      WOODPECKER_AGENT_SECRET: $WOODPECKER_AGENT_SECRET
+    volumes:
+      # - $VOLUME/woodpecker/etc:/etc/woodpecker
+      - woodpecker-agent-config:/etc/woodpecker
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - backend
+    depends_on:
+      - woodpecker-server
+
+networks:
+  frontend:
+    external: true
+  backend:
+    external: true
+
+volumes:
+  woodpecker-server-data:
+  woodpecker-agent-config:
