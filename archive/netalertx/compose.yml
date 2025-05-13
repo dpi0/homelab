@@ -1,0 +1,43 @@
+---
+services:
+  netalertx:
+    container_name: netalertx
+    image: ghcr.io/jokob-sk/netalertx:latest
+    restart: unless-stopped
+    environment:
+      TZ: $TZ      
+      PORT: $PORT
+    volumes:
+      - $VOLUME/netalertx/config:/app/config
+      - $VOLUME/netalertx/db/:/app/db/      
+      # (optional) useful for debugging if you have issues setting up the container
+      # - $VOLUME/netalterx/logs:/app/log
+      # (API: OPTION 1) use for performance
+      - type: tmpfs
+        target: /app/api
+      # (API: OPTION 2) use when debugging issues 
+      # -  local/path/api:/app/api
+    network_mode: host
+    ports:
+      - 1008:1008
+
+  netalertx-nginx-proxy:
+    container_name: netalertx-nginx-proxy
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - $VOLUME/netalertx/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    labels:
+      traefik.enable: true
+      traefik.http.routers.netalertx-https.entrypoints: websecure
+      traefik.http.routers.netalertx-https.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.netalertx-https.tls: true
+      traefik.http.routers.netalertx-https.tls.certresolver: cloudflare
+      traefik.http.routers.netalertx-https.middlewares: tinyauth
+      com.centurylinklabs.watchtower.enable: true
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    external: true
