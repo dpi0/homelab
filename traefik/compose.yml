@@ -9,15 +9,17 @@ services:
       TZ: $TZ
     volumes:
       - ./config/traefik.yml:/etc/traefik/traefik.yaml:ro
+      # - ./config/traefik_dynamic.yml:/etc/traefik/traefik_dynamic.yaml:ro
       # - ./config/conf/:/etc/traefik/conf/
       - $VOLUME/traefik/data/certs:/etc/traefik/certs:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - $VOLUME/traefik/logs:/logs
     labels:
       com.centurylinklabs.watchtower.enable: true
     ports:
       - 80:80
       - 443:443
-      - $TRAEFIK_PORT:8080 # dashboard, avoid in production
+      # - $TRAEFIK_PORT:8080 # dashboard, avoid in production
     networks:
       - frontend
       - backend

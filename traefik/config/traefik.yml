@@ -5,12 +5,27 @@ global:
 accessLog: {}
 
 log:
-  level: ERROR
+  # level: INFO
+  level: DEBUG
+
+# accessLog:
+#   filePath: '/logs/access.log'
 
 api:
-  dashboard: true
+  dashboard: false
   insecure: true
   debug: false
+
+# http:
+#   middlewares:
+#     oauth2-auth:
+#       forwardAuth:
+#         address: http://oauth2-proxy:4180/oauth2/auth
+#         trustForwardHeader: true
+#         authResponseHeaders:
+#           - X-Auth-Request-User
+#           - X-Auth-Request-Email
+#           - Set-Cookie
 
 entryPoints:
   web:
@@ -41,10 +56,14 @@ serversTransport:
   insecureSkipVerify: true
 
 providers:
+  # file:
+  #   filename: /config.yml
+  #   watch: true
   docker:
-    exposedByDefault: false
     endpoint: 'unix:///var/run/docker.sock'
+    exposedByDefault: false
     watch: true
-#   file:
-#     directory: /etc/traefik/conf/
-#     watch: true
+    # only exposes the services with the label `ai.ix.expose=true`
+    # constraints: "Label(`ai.ix.expose`, `true`)"
+    # if no rule exists, it uses the value of the label `ai.ix.fqdn` for Host(``)
+    # defaultRule: "Host(`{{ index .Labels \"ai.ix.fqdn\"}}`)"
