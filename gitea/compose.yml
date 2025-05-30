@@ -55,7 +55,8 @@ services:
     restart: unless-stopped
     environment:
       CONFIG_FILE: /data/config.yaml
-      GITEA_INSTANCE_URL: https://${FQDN}
+      # GITEA_INSTANCE_URL: https://${FQDN}
+      GITEA_INSTANCE_URL: http://gitea:3000
       GITEA_RUNNER_REGISTRATION_TOKEN: ${GITEA_RUNNER_REGISTRATION_TOKEN}
       GITEA_RUNNER_NAME: gitea-runner
       # GITEA_RUNNER_LABELS: "ubuntu-20.04:docker://gitea/runner-images:ubuntu-20.04"
