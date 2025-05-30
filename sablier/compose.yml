@@ -1,0 +1,42 @@
+---
+services:
+  sablier:
+    container_name: sablier
+    image: sablierapp/sablier:latest
+    restart: unless-stopped
+    environment:
+      # https://sablierapp.dev/#/configuration
+      PROVIDER: docker
+      SERVER_PORT: 10000
+      # STORAGE_FILE:
+      SESSIONS_DEFAULT_DURATION: 5m
+      # Higher duration gives less stress on CPU
+      # If you only use sessions of 1h, setting this to 5m is a good trade-off
+      SESSIONS_EXPIRATION_INTERVAL: 20s
+      LOGGING_LEVEL: trace
+      STRATEGY_DYNAMIC_DEFAULT_THEME: hacker-terminal
+      STRATEGY_DYNAMIC_DEFAULT_REFRESH_FREQUENCY: 5s
+      STRATEGY_DYNAMIC_SHOW_DETAILS_BY_DEFAULT: true
+      STRATEGY_BLOCKING_DEFAULT_TIMEOUT: 1m
+    volumes:
+    #   - $PWD/config/sablier.yaml:/etc/sablier/sablier.yaml
+        - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - start
+    labels:
+      traefik.enable: true
+      traefik.http.routers.sablier.entrypoints: websecure
+      traefik.http.routers.sablier.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.sablier.tls: true
+      traefik.http.routers.sablier.tls.certresolver: cloudflare
+      traefik.http.services.sablier.loadbalancer.server.port: 10000
+      com.centurylinklabs.watchtower.enable: true
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+    external: true
+  backend:
+    external: true
