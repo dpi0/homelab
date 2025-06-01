@@ -26,6 +26,13 @@ services:
       traefik.http.routers.navidrome-https.tls.certresolver: cloudflare
       # traefik.http.routers.navidrome-https.middlewares: tinyauth
       # traefik.http.services.navidrome-https.loadbalancer.server.port: 4533
+
+      traefik.http.routers.navidrome-tailscale.rule: "Host(`${FQDN_TAILSCALE}`)"
+      traefik.http.routers.navidrome-tailscale.entryPoints: websecure
+      traefik.http.routers.navidrome-tailscale.tls: true
+      traefik.http.routers.navidrome-tailscale.tls.certresolver: cloudflare
+      # traefik.http.routers.glance-tailscale.middlewares: tinyauth
+
       com.centurylinklabs.watchtower.enable: true
     # ports:
     #   - 1015:4533

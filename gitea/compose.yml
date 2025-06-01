@@ -40,8 +40,13 @@ services:
       traefik.http.routers.gitea.rule: "Host(`${FQDN}`)"
       traefik.http.routers.gitea.tls: true
       traefik.http.routers.gitea.tls.certresolver: cloudflare
-      # traefik.http.routers.gitea.middlewares: tinyauth
       traefik.http.services.gitea.loadbalancer.server.port: 3000
+
+      traefik.http.routers.gitea-tailscale.entrypoints: websecure
+      traefik.http.routers.gitea-tailscale.rule: "Host(`${FQDN_TAILSCALE}`)"
+      traefik.http.routers.gitea-tailscale.tls: true
+      traefik.http.routers.gitea-tailscale.tls.certresolver: cloudflare
+
       com.centurylinklabs.watchtower.enable: true
     ports:
     - $SSH_PORT:22

@@ -35,8 +35,13 @@ services:
       traefik.http.routers.backrest-https.rule: "Host(`${FQDN}`)"
       traefik.http.routers.backrest-https.tls: true
       traefik.http.routers.backrest-https.tls.certresolver: cloudflare
-      # traefik.http.routers.backrest-https.middlewares: tinyauth
       traefik.http.services.backrest-https.loadbalancer.server.port: 9898
+
+      traefik.http.routers.backrest-tailscale.rule: "Host(`${FQDN_TAILSCALE}`)"
+      traefik.http.routers.backrest-tailscale.entryPoints: websecure
+      traefik.http.routers.backrest-tailscale.tls: true
+      traefik.http.routers.backrest-tailscale.tls.certresolver: cloudflare
+
       com.centurylinklabs.watchtower.enable: true
     # ports:
     #   - 1009:9898

@@ -26,12 +26,25 @@ services:
       traefik.http.routers.qbittorrent-https.entrypoints: websecure
       traefik.http.routers.qbittorrent-https.rule: "Host(`${FQDN}`)"
       traefik.http.routers.qbittorrent-https.tls: true
+      # for multiple routers (https and tailscale) you might have to sometimes explictiy set the service name
+      # traefik automatically creates one or more services for you most of the time 'jellyfin-https' or 'jellyfin-tailscale' etc
+      # if not, then this .service 
+      # https://r.dpi0.cloud/r/Traefik/comments/1gs2kgi/weird_error
+      # https://community.traefik.io/t/could-not-define-the-service-name-for-the-router-too-many-services/5514
+      # https://doc.traefik.io/traefik/routing/providers/docker/#service-definition
+      traefik.http.routers.qbittorrent-https.service: qbittorrent-https
       traefik.http.routers.qbittorrent-https.tls.certresolver: cloudflare
-      traefik.http.routers.qbittorrent-https.middlewares: tinyauth
       traefik.http.services.qbittorrent-https.loadbalancer.server.port: 8080
+
+      traefik.http.routers.qbittorrent-tailscale.entryPoints: websecure
+      # here sevice name 'qbittorrent-tailscale' was needed
+      traefik.http.routers.qbittorrent-tailscale.service: qbittorrent-tailscale
+      traefik.http.routers.qbittorrent-tailscale.rule: "Host(`${FQDN_TAILSCALE}`)"
+      traefik.http.routers.qbittorrent-tailscale.tls: true
+      traefik.http.routers.qbittorrent-tailscale.tls.certresolver: cloudflare
+      traefik.http.services.qbittorrent-tailscale.loadbalancer.server.port: 8080
+
       com.centurylinklabs.watchtower.enable: true
-    # ports:
-    #   - 1012:8080
     networks:
       - frontend
 

@@ -18,7 +18,12 @@ services:
       traefik.http.routers.syncthing-https.rule: "Host(`${FQDN}`)"
       traefik.http.routers.syncthing-https.tls: true
       traefik.http.routers.syncthing-https.tls.certresolver: cloudflare
-      # traefik.http.routers.syncthing-https.middlewares: tinyauth
+
+      traefik.http.routers.syncthing-tailscale.entryPoints: websecure
+      traefik.http.routers.syncthing-tailscale.rule: "Host(`${FQDN_TAILSCALE}`)"
+      traefik.http.routers.syncthing-tailscale.tls: true
+      traefik.http.routers.syncthing-tailscale.tls.certresolver: cloudflare
+
       com.centurylinklabs.watchtower.enable: true
     # ports:
     #   - 22000:22000/udp

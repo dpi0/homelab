@@ -38,17 +38,14 @@ services:
     # but it's relatively new and it has not been battle tested
     labels:
       traefik.enable: true
-      # traefik.http.routers.tinyauth.entrypoints: web
-      # traefik.http.routers.tinyauth.rule: "Host(`${FQDN}`)"
-      # traefik.http.middlewares.tinyauth-https-redirect.redirectscheme.scheme: https
-      # traefik.http.routers.tinyauth.middlewares: tinyauth-https-redirect
-      traefik.http.routers.tinyauth-secure.entrypoints: websecure
-      traefik.http.routers.tinyauth-secure.rule: "Host(`${FQDN}`)"
-      traefik.http.routers.tinyauth-secure.tls: true
-      traefik.http.routers.tinyauth-secure.tls.certresolver: cloudflare
-      traefik.http.routers.tinyauth-secure.service: tinyauth
-      traefik.http.middlewares.tinyauth.forwardauth.address: http://tinyauth:3000/api/auth/traefik
+      traefik.http.routers.tinyauth.service: tinyauth
+      traefik.http.routers.tinyauth.entrypoints: websecure
+      traefik.http.routers.tinyauth.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.tinyauth.tls: true
+      traefik.http.routers.tinyauth.tls.certresolver: cloudflare
       traefik.http.services.tinyauth.loadbalancer.server.port: 3000
+
+      traefik.http.middlewares.tinyauth.forwardauth.address: http://tinyauth:3000/api/auth/traefik
       com.centurylinklabs.watchtower.enable: true
     networks:
       - frontend

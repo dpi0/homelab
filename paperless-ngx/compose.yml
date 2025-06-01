@@ -28,9 +28,17 @@ services:
       traefik.http.routers.paperless-ngx.entrypoints: websecure
       traefik.http.routers.paperless-ngx.rule: "Host(`${FQDN}`)"
       traefik.http.routers.paperless-ngx.tls: true
+      traefik.http.routers.paperless-ngx.service: paperless-ngx
       traefik.http.routers.paperless-ngx.tls.certresolver: cloudflare
-      # traefik.http.routers.paperless-ngx.middlewares: tinyauth
       traefik.http.services.paperless-ngx.loadbalancer.server.port: 8000
+
+      traefik.http.routers.paperless-ngx-tailscale.entryPoints: websecure
+      traefik.http.routers.paperless-ngx-tailscale.rule: "Host(`${FQDN_TAILSCALE}`)"
+      traefik.http.routers.paperless-ngx-tailscale.service: paperless-ngx-tailscale
+      traefik.http.routers.paperless-ngx-tailscale.tls: true
+      traefik.http.routers.paperless-ngx-tailscale.tls.certresolver: cloudflare
+      traefik.http.services.paperless-ngx-tailscale.loadbalancer.server.port: 8000
+
       com.centurylinklabs.watchtower.enable: true
     depends_on:
       - paperless-ngx-redis
