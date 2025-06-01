@@ -5,27 +5,48 @@ services:
     image: traefik:latest
     restart: unless-stopped
     environment:
-      CF_DNS_API_TOKEN: $CF_DNS_API_TOKEN
-      TZ: $TZ
+      CF_DNS_API_TOKEN_FILE: /run/secrets/cloudflare-token
+      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
+    # secret files are the recommended setup for prod
+    #   CF_DNS_API_TOKEN: $CF_DNS_API_TOKEN
     volumes:
-      - ./config/traefik.yml:/etc/traefik/traefik.yaml:ro
-      # - ./config/traefik_dynamic.yml:/etc/traefik/traefik_dynamic.yaml:ro
-      # - ./config/conf/:/etc/traefik/conf/
-      - $VOLUME/traefik/data/certs:/etc/traefik/certs:rw
+      - $PWD/config/static.yml:/etc/traefik/traefik.yaml:ro
+      # - $PWD/config/dynamic.yml:/etc/traefik/dynamic.yaml:ro
+      - $VOLUME/traefik/certs:/etc/traefik/certs:rw
+      - $VOLUME/traefik/logs:/var/log/traefik
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - $VOLUME/traefik/logs:/logs
-    labels:
-      com.centurylinklabs.watchtower.enable: true
+      - /etc/localtime:/etc/localtime:ro
+    security_opt:
+      - no-new-privileges:true # helps to increase security
+    secrets:
+      - cloudflare-token
+    env_file:
+      - .env
     ports:
       - 80:80
       - 443:443
       # - $TRAEFIK_PORT:8080 # dashboard, avoid in production
+    labels:
+      # need to enable dashboard for this label to work
+      traefik.enable: true
+      traefik.http.routers.traefik.entrypoints: websecure
+      traefik.http.routers.traefik.rule: "Host(`${FQDN}`)"
+      traefik.http.routers.traefik.tls: true
+      traefik.http.routers.traefik.tls.certresolver: cloudflare
+      traefik.http.routers.traefik.middlewares: traefik-auth@docker
+
+      traefik.http.middlewares.traefik-auth.basicauth.users: ${TRAEFIK_DASHBOARD_CREDENTIALS}
+      com.centurylinklabs.watchtower.enable: true
     networks:
       - frontend
-      - backend
+      # - backend
+
+secrets:
+  cloudflare-token:
+    file: ./cloudflare-token
 
 networks:
   frontend:
     external: true
-  backend:
-    external: true
+  # backend:
+  #   external: true

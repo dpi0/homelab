@@ -26,8 +26,8 @@ services:
       traefik.http.routers.filebrowser-tailscale.tls.certresolver: cloudflare
 
       com.centurylinklabs.watchtower.enable: true
-    ports:
-      - 1011:80 
+    # ports:
+    #   - 1011:80 
     networks:
       - frontend
 

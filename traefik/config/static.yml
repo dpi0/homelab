@@ -1,0 +1,74 @@
+---
+# https://www.benjaminrancourt.ca/a-complete-traefik-configuration
+# https://doc.traefik.io/traefik/getting-started/configuration-overview/#the-static-configuration
+# https://doc.traefik.io/traefik/reference/static-configuration/cli
+
+api:
+  dashboard: false                             # Activate dashboard. (Default: true)
+  debug: false                                 # Enable additional endpoints for debugging and profiling. (Default: false)
+  insecure: false                              # Activate API directly on the entryPoint named traefik. (Default: false)
+
+global:
+  checknewversion: false                       # Periodically check if a new version has been released.
+  sendanonymoususage: false                    # Periodically send anonymous usage statistics.
+
+entryPoints:
+  web:
+    address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: :443
+
+serversTransport:
+  insecureSkipVerify: false                    # Disable SSL certificate verification. (Default: false)
+
+providers:
+  docker:
+    endpoint: 'unix:///var/run/docker.sock'
+    exposedByDefault: false
+    watch: true
+  # file:
+  #   filename: /dynamic.yml
+
+# https://doc.traefik.io/traefik/https/acme/#certificate-resolvers
+certificatesResolvers:
+  cloudflare:
+    acme:
+      email: 'dpi0.dev@proton.me' # cloudlare email
+      storage: /etc/traefik/certs/cloudflare-acme.json
+      caServer: 'https://acme-v02.api.letsencrypt.org/directory'
+      keyType: EC256
+      # dns challenge doesn't need port :80 open
+      # this places a TXT record in your cloudflare dns records using the API token you provided
+      # so everytime traefik needs a certificate, it just checks the record for that TXT record and confirms
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - '1.1.1.1:53'
+          - '1.0.0.1:53'
+
+log:
+  # https://doc.traefik.io/traefik/observability/logs/#level
+  level: ERROR
+  # file might get very big very fast
+  # remove the path to not save in a file
+  filePath: "/var/log/traefik/traefik.log"
+
+accessLog:
+  filePath: "/var/log/traefik/access.log"
+
+# tls:
+#   certificates:
+#     - certFile: /certs/sky.home.crt
+#       keyFile: /certs/sky.home.key
+
+# experimental:
+#   plugins:
+#     # https://plugins.traefik.io/plugins/633b4658a4caa9ddeffda119/sablier
+#     sablier:
+#       moduleName: "github.com/acouvreur/sablier"
+#       version: "v1.8.0-beta.23"

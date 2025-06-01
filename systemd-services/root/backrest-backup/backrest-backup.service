@@ -4,6 +4,6 @@ After=network.target
 
 [Service]
 Type=oneshot
-ExecStart=/home/dpi0/scripts/backrest-backup.sh
+ExecStart=/home/dpi0/scripts/homelab/backrest-config-backup.sh
 User=root
 Group=root

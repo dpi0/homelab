@@ -1,3 +1,4 @@
 **/.env
+**/cloudflare-token
 **/rclone.conf
 **/.un~
